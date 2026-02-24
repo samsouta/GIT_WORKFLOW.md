@@ -1,0 +1,105 @@
+# 🗂 Git Workflow Cheatsheet
+
+---
+
+## 🔄 1. Update Local Branch From GitHub
+
+### Update `dev`
+```bash
+git checkout dev
+git pull origin dev
+```
+> 👉 Switch to `dev` and update it from GitHub.
+
+### Update `main`
+```bash
+git checkout main
+git pull origin main
+```
+> 👉 Switch to `main` and update it from GitHub.
+
+---
+
+## 🔀 2. Merge Dev → Main
+
+### ✅ Normal Merge *(keep all commits)*
+```bash
+git checkout main
+git merge dev
+git push origin main
+```
+- ✔ Keeps all `dev` commit history in `main`
+- ✔ Good for tracking changes
+
+### ✅ Squash Merge *(one clean commit)*
+```bash
+git checkout main
+git merge --squash dev
+git commit -m "Feature: describe change"
+git push origin main
+```
+- ✔ Combines all `dev` commits into **ONE** commit
+- ✔ Cleaner `main` history
+
+---
+
+## 🔁 3. Reset Dev After Merge *(Start Fresh)*
+
+> Use this after `dev` is merged to `main` and you want a clean `dev` branch.
+
+```bash
+git checkout dev
+git fetch origin
+git reset --hard origin/main
+git push --force origin dev
+```
+- ✔ Makes `dev` exactly the same as `main`
+- ✔ Clears old `dev` history
+- ⚠️ Use `--force` carefully — **only if working alone**
+
+---
+
+## 🖥 4. Safe Deploy on VPS
+
+> ⚠️ Never use plain `git pull` on production.
+
+```bash
+git fetch origin
+git reset --hard origin/dev     # for dev server
+# or
+git reset --hard origin/main    # for production
+```
+- ✔ Forces VPS to match GitHub exactly
+- ✔ Prevents old files or conflicts
+
+---
+
+## 📦 5. Full Deploy Steps *(Example)*
+
+```bash
+git fetch origin
+git reset --hard origin/main
+git clean -fd
+
+cd backend
+npm ci
+npx prisma generate
+npm run build
+
+pm2 restart yu-chann-prod --update-env
+```
+- ✔ Clean
+- ✔ Predictable
+- ✔ Production safe
+
+---
+
+## 🧠 Simple Mental Model
+
+| Command | What it does |
+|---|---|
+| `pull` | Update branch from GitHub |
+| `merge` | Combine branches |
+| `squash` | Combine commits into one |
+| `reset --hard` | Force branch to match another |
+| VPS | Mirror of GitHub |
